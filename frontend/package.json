@@ -45,9 +45,6 @@
       "prettier/prettier": [
         "error",
         {
-          "singleQuote": true,
-          "semi": false,
-          "trailingComma": "none"
         }
       ],
       "arrow-body-style": "off",

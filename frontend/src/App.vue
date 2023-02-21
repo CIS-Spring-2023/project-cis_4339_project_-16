@@ -36,6 +36,15 @@ export default {
               </router-link>
             </li>
             <li>
+              <router-link to="/login">
+              <span
+                style="position: relative; top: 6px"
+                class="material-icons"
+                >login</span>
+                Login
+              </router-link>
+            </li>
+            <li>
               <router-link to="/intakeform">
                 <span
                   style="position: relative; top: 6px"
