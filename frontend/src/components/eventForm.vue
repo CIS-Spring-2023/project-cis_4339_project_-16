@@ -1,59 +1,59 @@
 <script>
-import useVuelidate from '@vuelidate/core'
-import { required } from '@vuelidate/validators'
-import axios from 'axios'
-const apiURL = import.meta.env.VITE_ROOT_API
+import useVuelidate from "@vuelidate/core";
+import { required } from "@vuelidate/validators";
+import axios from "axios";
+const apiURL = import.meta.env.VITE_ROOT_API;
 
 export default {
   setup() {
-    return { v$: useVuelidate({ $autoDirty: true }) }
+    return { v$: useVuelidate({ $autoDirty: true }) };
   },
   data() {
     return {
       // removed unnecessary extra array to track services
       event: {
-        name: '',
+        name: "",
         services: [],
-        date: '',
+        date: "",
         address: {
-          line1: '',
-          line2: '',
-          city: '',
-          county: '',
-          zip: ''
+          line1: "",
+          line2: "",
+          city: "",
+          county: "",
+          zip: "",
         },
-        description: ''
-      }
-    }
+        description: "",
+      },
+    };
   },
   methods: {
     async handleSubmitForm() {
       // Checks to see if there are any errors in validation
-      const isFormCorrect = await this.v$.$validate()
+      const isFormCorrect = await this.v$.$validate();
       // If no errors found. isFormCorrect = True then the form is submitted
       if (isFormCorrect) {
         axios
           .post(`${apiURL}/events`, this.event)
           .then(() => {
-            alert('Event has been added.')
-            this.$router.push({ name: 'findevents' })
+            alert("Event has been added.");
+            this.$router.push({ name: "findevents" });
           })
           .catch((error) => {
-            console.log(error)
-          })
+            console.log(error);
+          });
       }
-    }
+    },
   },
   // sets validations for the various data properties
   validations() {
     return {
       event: {
         name: { required },
-        date: { required }
-      }
-    }
-  }
-}
+        date: { required },
+      },
+    };
+  },
+};
 </script>
 <template>
   <main>
