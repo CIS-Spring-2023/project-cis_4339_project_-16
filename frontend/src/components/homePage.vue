@@ -2,23 +2,28 @@
 import { DateTime } from "luxon";
 import axios from "axios";
 import AttendanceChart from "./barChart.vue";
+import PieChart from "./pieChart.vue";
 const apiURL = import.meta.env.VITE_ROOT_API;
 
 export default {
   components: {
     AttendanceChart,
+    PieChart,
   },
   data() {
     return {
       recentEvents: [],
       labels: [],
       chartData: [],
+      zipLabels: [],
+      zipChartData: [],
       loading: false,
       error: null,
     };
   },
   mounted() {
     this.getAttendanceData();
+    this.getZipCodes();
   },
   methods: {
     async getAttendanceData() {
@@ -45,6 +50,44 @@ export default {
             message: err.message,
           };
         } else {
+          // There's probably an error in your code
+          this.error = {
+            title: "Application Error",
+            message: err.message,
+          };
+        }
+      }
+      this.loading = false;
+    },
+    async getZipCodes() {
+      try {
+        this.error = null;
+        this.loading = true;
+        const zipData = [
+          { zipcode: 77040, count: 10 },
+          { zipcode: 77433, count: 15 },
+          { zipcode: 77003, count: 20 },
+          { zipcode: 77204, count: 3 },
+        ];
+        // const response = await axios.get(`${apiURL}/client/zipcode`);
+        // this.zipCodes = response.data;
+        this.zipLabels = zipData.map((zip) => zip.zipcode);
+        this.zipChartData = zipData.map((zip) => zip.count);
+        console.log(this.zipLabels);
+      } catch (err) {
+        if (err.response) {
+          // client received an error response (5xx, 4xx)
+          // this.error = {
+          // title: "Server Response",
+          // message: err.message,
+          // };
+          // } else if (err.request) {
+          // client never received a response, or request never left
+          // this.error = {
+          // title: "Unable to Reach Server",
+          // message: err.message,
+          // };
+          // } else {
           // There's probably an error in your code
           this.error = {
             title: "Application Error",
@@ -131,6 +174,43 @@ export default {
               </p>
             </div>
             <!-- End of error alert -->
+            <div>
+              <h1
+                class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10"
+              >
+                Client by Zip Code chart
+              </h1>
+              <!-- <PieChart
+                v-if="!loading && !error"
+                :label="zipLabels"
+                :data="zipChartData"
+              ></PieChart> -->
+              <PieChart
+                v-if="!loading"
+                :label="zipLabels"
+                :data="zipChartData"
+              ></PieChart>
+              <!-- Start of loading animation -->
+              <div class="mt-40" v-if="loading">
+                <p
+                  class="text-6xl font-bold text-center text-gray-500 animate-pulse"
+                >
+                  Loading...
+                </p>
+              </div>
+              <!-- End of loading animation -->
+
+              <!-- Start of error alert -->
+              <div class="mt-12 bg-red-50" v-if="error">
+                <h3 class="px-4 py-1 text-4xl font-bold text-white bg-red-800">
+                  {{ error.title }}
+                </h3>
+                <p class="p-4 text-lg font-bold text-red-900">
+                  {{ error.message }}
+                </p>
+              </div>
+              <!-- End of error alert -->
+            </div>
           </div>
         </div>
       </div>
