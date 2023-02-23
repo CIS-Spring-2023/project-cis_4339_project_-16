@@ -1,5 +1,6 @@
 <script>
 import axios from "axios";
+import bcrypt from "bcryptjs"
 const apiURL = import.meta.env.VITE_ROOT_API;
 
 export default {
@@ -12,6 +13,7 @@ export default {
   methods: {
     async login() {
       try {
+        const hashedPassword = await bcrypt.hash(this.Password, 10);
         const response = await axios.get("https://myApiEndpoint.com/login", {
           email: this.email,
           password: this.password,
