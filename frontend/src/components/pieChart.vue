@@ -1,46 +1,34 @@
 <script>
 import { Chart, registerables } from "chart.js";
+import {data} from "autoprefixer";
 Chart.register(...registerables);
 
 export default {
-  data() {
-    return {
-      zipLabels: ["zipcode", "count"],
-      zipChartData: [
-        { zipcode: 77040, count: 10 },
-        { zipcode: 77433, count: 15 },
-        { zipcode: 77003, count: 20 },
-        { zipcode: 77204, count: 3 },
-      ],
-    };
-    // props: {
-    // zipLabel: {
-    // type: Array,
-    // },
-    // zipChartData: {
-    //type: Array,
+    props: {
+      zipLabel: {
+        type: Array,
+      },
+      zipChartData: {
+        type: Array
+      },
   },
-  async mounted() {
+  mounted() {
     console.log(this.zipChartData);
     const backgroundColor = this.zipChartData.map(() => this.getColor());
     const borderColor = backgroundColor.map((e) =>
       e.replace(/[\d\.]+\)$/g, "1)")
     );
-    await new Chart(this.$refs.pieChart, {
+    new Chart(this.$refs.pieChart, {
       type: "pie",
       data: {
         labels: this.zipLabels,
         datasets: [
           {
+            label: 'Does this work',
             borderWidth: 1,
             backgroundColor: backgroundColor,
             borderColor: borderColor,
-            data: [
-              { zipcode: 77040, count: 10 },
-              { zipcode: 77433, count: 15 },
-              { zipcode: 77003, count: 20 },
-              { zipcode: 77204, count: 3 },
-            ],
+            data: this.zipChartData,
           },
         ],
       },
@@ -51,8 +39,7 @@ export default {
             position: "bottom",
           },
         },
-        responsive: true,
-        maintainAspectRatio: true,
+
       },
     });
   },

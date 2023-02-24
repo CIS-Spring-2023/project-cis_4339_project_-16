@@ -15,15 +15,15 @@ export default {
       recentEvents: [],
       labels: [],
       chartData: [],
-      zipLabels: [],
-      zipChartData: [],
+      zipLabels: ['77771', '77772', '77773', '77774'],
+      zipChartData: [10, 20, 15, 3],
       loading: false,
       error: null,
     };
   },
   mounted() {
     this.getAttendanceData();
-    this.getZipCodes();
+    // this.getZipCodes();
   },
   methods: {
     async getAttendanceData() {
@@ -64,16 +64,16 @@ export default {
         this.error = null;
         this.loading = true;
         const zipData = [
-          { zipcode: 77040, count: 10 },
-          { zipcode: 77433, count: 15 },
-          { zipcode: 77003, count: 20 },
-          { zipcode: 77204, count: 3 },
+          { zipcode: '77040', count: 10 },
+          { zipcode: '77433', count: 15 },
+          { zipcode: '77003', count: 20 },
+          { zipcode: '77204', count: 3 },
         ];
         // const response = await axios.get(`${apiURL}/client/zipcode`);
         // this.zipCodes = response.data;
         this.zipLabels = zipData.map((zip) => zip.zipcode);
         this.zipChartData = zipData.map((zip) => zip.count);
-        console.log(this.zipLabels);
+        // console.log(this.zipLabels);
       } catch (err) {
         if (err.response) {
           // client received an error response (5xx, 4xx)
@@ -186,29 +186,29 @@ export default {
                 :data="zipChartData"
               ></PieChart> -->
               <PieChart
-                v-if="!loading"
+
                 :label="zipLabels"
-                :data="zipChartData"
+                :chart-data="zipChartData"
               ></PieChart>
               <!-- Start of loading animation -->
-              <div class="mt-40" v-if="loading">
-                <p
+              <!--<div class="mt-40" v-if="loading">
+                // <p
                   class="text-6xl font-bold text-center text-gray-500 animate-pulse"
                 >
                   Loading...
                 </p>
               </div>
-              <!-- End of loading animation -->
+              End of loading animation -->
 
               <!-- Start of error alert -->
-              <div class="mt-12 bg-red-50" v-if="error">
+              <!--<div class="mt-12 bg-red-50" v-if="error">
                 <h3 class="px-4 py-1 text-4xl font-bold text-white bg-red-800">
                   {{ error.title }}
                 </h3>
                 <p class="p-4 text-lg font-bold text-red-900">
                   {{ error.message }}
                 </p>
-              </div>
+              </div>-->
               <!-- End of error alert -->
             </div>
           </div>
