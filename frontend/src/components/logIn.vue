@@ -1,13 +1,13 @@
 <script>
 import axios from "axios";
-import bcrypt from "bcryptjs"
+import bcrypt from "bcryptjs";
 const apiURL = import.meta.env.VITE_ROOT_API;
 
 export default {
   data() {
     return {
-      email: "",
-      password: "",
+      email: "me@me.com",
+      password: "password",
     };
   },
   methods: {
