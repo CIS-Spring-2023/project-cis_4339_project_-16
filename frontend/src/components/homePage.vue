@@ -186,7 +186,7 @@ export default {
               </tbody>
             </table>
             <div>
-              <PieChart :label="pieLabels" :data="pieChartData"></PieChart>
+              <PieChart :label="pieLabels" :pie-chart-data="pieChartData"></PieChart>
             </div>
           </div>
         </div>

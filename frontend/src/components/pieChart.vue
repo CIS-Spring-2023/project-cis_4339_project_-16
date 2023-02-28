@@ -4,10 +4,10 @@ Chart.register(...registerables);
 
 export default {
   props: {
-    label: {
+    pieLabels: {
       type: Array,
     },
-    ChartData: {
+    pieChartData: {
       type: Array,
     },
   },
@@ -21,6 +21,7 @@ export default {
             borderWidth: 1,
             backgroundColor: ["maroon", "violet", "red", "grey", "yellow"],
             borderColor: "black",
+            data: this.pieChartData,
           },
         ],
       },
