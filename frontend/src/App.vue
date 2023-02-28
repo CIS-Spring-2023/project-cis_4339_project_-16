@@ -66,6 +66,16 @@ export default {
               </router-link>
             </li>
             <li>
+              <router-link to="/crudService">
+                <span
+                  style="position: relative; top: 6px"
+                  class="material-icons"
+                  >service</span
+                >
+                Services
+              </router-link>
+            </li>
+            <li>
               <router-link to="/findclient">
                 <span
                   style="position: relative; top: 6px"
