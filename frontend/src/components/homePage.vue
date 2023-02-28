@@ -15,15 +15,15 @@ export default {
       recentEvents: [],
       labels: [],
       chartData: [],
-      zipLabels: [],
-      zipChartData: [],
+      pieLabels: ["77433", "77434", "77436", "77437"],
+      pieChartData: [5, 8, 2, 3],
       loading: false,
       error: null,
     };
   },
   mounted() {
     this.getAttendanceData();
-    this.getZipCodes();
+    // this.getZipCodes();
   },
   methods: {
     async getAttendanceData() {
@@ -59,44 +59,40 @@ export default {
       }
       this.loading = false;
     },
-    async getZipCodes() {
-      try {
-        this.error = null;
-        this.loading = true;
-        const zipData = [
-          { zipcode: 77040, count: 10 },
-          { zipcode: 77433, count: 15 },
-          { zipcode: 77003, count: 20 },
-          { zipcode: 77204, count: 3 },
-        ];
-        // const response = await axios.get(`${apiURL}/client/zipcode`);
-        // this.zipCodes = response.data;
-        this.zipLabels = zipData.map((zip) => zip.zipcode);
-        this.zipChartData = zipData.map((zip) => zip.count);
-        console.log(this.zipLabels);
-      } catch (err) {
-        if (err.response) {
-          // client received an error response (5xx, 4xx)
-          // this.error = {
-          // title: "Server Response",
-          // message: err.message,
-          // };
-          // } else if (err.request) {
-          // client never received a response, or request never left
-          // this.error = {
-          // title: "Unable to Reach Server",
-          // message: err.message,
-          // };
-          // } else {
-          // There's probably an error in your code
-          this.error = {
-            title: "Application Error",
-            message: err.message,
-          };
-        }
-      }
-      this.loading = false;
-    },
+    // async getZipCodes() {
+    // try {
+    // this.error = null;
+    // this.loading = true;
+    // const zipData = [
+    // ];
+    // const response = await axios.get(`${apiURL}/client/zipcode`);
+    // this.zipCodes = response.data;
+    // this.zipLabels = zipData.map((zip) => zip.zipcode);
+    // this.zipChartData = zipData.map((zip) => zip.count);
+    // console.log(this.zipLabels);
+    // } catch (err) {
+    // if (err.response) {
+    // client received an error response (5xx, 4xx)
+    // this.error = {
+    // title: "Server Response",
+    // message: err.message,
+    // };
+    // } else if (err.request) {
+    // client never received a response, or request never left
+    // this.error = {
+    // title: "Unable to Reach Server",
+    // message: err.message,
+    // };
+    // } else {
+    // There's probably an error in your code
+    // this.error = {
+    // title: "Application Error",
+    // message: err.message,
+    // };
+    // }
+    // }
+    // this.loading = false;
+    // },
     formattedDate(datetimeDB) {
       const dt = DateTime.fromISO(datetimeDB, {
         zone: "utc",
@@ -174,42 +170,23 @@ export default {
               </p>
             </div>
             <!-- End of error alert -->
+            <!--Table for zip and number of clients-->
+            <table class="min-w-full shadow-md rounded">
+              <thead class="bg-gray-50 text-xl">
+                <tr class="p-4 text-left">
+                  <th class="p-4 text-left">Zip Code</th>
+                  <th class="p-4 text-left">Number of Clients</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-300">
+                <tr v-for="(zipCode, i) in pieLabels">
+                  <td class="p-2 text-left">{{ zipCode }}</td>
+                  <td class="p-2 text-left">{{ this.pieChartData[i] }}</td>
+                </tr>
+              </tbody>
+            </table>
             <div>
-              <h1
-                class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10"
-              >
-                Client by Zip Code chart
-              </h1>
-              <!-- <PieChart
-                v-if="!loading && !error"
-                :label="zipLabels"
-                :data="zipChartData"
-              ></PieChart> -->
-              <PieChart
-                v-if="!loading"
-                :label="zipLabels"
-                :data="zipChartData"
-              ></PieChart>
-              <!-- Start of loading animation -->
-              <div class="mt-40" v-if="loading">
-                <p
-                  class="text-6xl font-bold text-center text-gray-500 animate-pulse"
-                >
-                  Loading...
-                </p>
-              </div>
-              <!-- End of loading animation -->
-
-              <!-- Start of error alert -->
-              <div class="mt-12 bg-red-50" v-if="error">
-                <h3 class="px-4 py-1 text-4xl font-bold text-white bg-red-800">
-                  {{ error.title }}
-                </h3>
-                <p class="p-4 text-lg font-bold text-red-900">
-                  {{ error.message }}
-                </p>
-              </div>
-              <!-- End of error alert -->
+              <PieChart :label="pieLabels" :data="pieChartData"></PieChart>
             </div>
           </div>
         </div>
