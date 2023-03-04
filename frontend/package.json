@@ -16,6 +16,7 @@
     "bcryptjs": "^2.4.3",
     "chart.js": "^3.9.1",
     "luxon": "^3.1.0",
+    "pinia": "^2.0.32",
     "vite": "^3.1.8",
     "vue": "^3.2.41",
     "vue-google-charts": "^1.1.0",

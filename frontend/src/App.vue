@@ -1,8 +1,13 @@
 <script>
 import axios from "axios";
+import { useLoggedInUserStore } from "@/store/loggedInUser";
 const apiURL = import.meta.env.VITE_ROOT_API;
 
 export default {
+  setup() {
+    const user = useLoggedInUserStore();
+    return { user };
+  },
   name: "App",
   data() {
     return {
@@ -46,7 +51,7 @@ export default {
               </router-link>
             </li>
             <li>
-              <router-link to="/intakeform">
+              <router-link v-if="user.isLoggedIn" to="/intakeform">
                 <span
                   style="position: relative; top: 6px"
                   class="material-icons"
@@ -56,7 +61,7 @@ export default {
               </router-link>
             </li>
             <li>
-              <router-link to="/eventform">
+              <router-link v-if="user.isLoggedIn" to="/eventform">
                 <span
                   style="position: relative; top: 6px"
                   class="material-icons"
@@ -66,7 +71,7 @@ export default {
               </router-link>
             </li>
             <li>
-              <router-link to="/crudService">
+              <router-link v-if="user.isLoggedIn" to="/crudService">
                 <span
                   style="position: relative; top: 6px"
                   class="material-icons"
@@ -76,7 +81,7 @@ export default {
               </router-link>
             </li>
             <li>
-              <router-link to="/findclient">
+              <router-link v-if="user.isLoggedIn" to="/findclient">
                 <span
                   style="position: relative; top: 6px"
                   class="material-icons"
@@ -86,7 +91,7 @@ export default {
               </router-link>
             </li>
             <li>
-              <router-link to="/findevents">
+              <router-link v-if="user.isLoggedIn" to="/findevents">
                 <span
                   style="position: relative; top: 6px"
                   class="material-icons"
