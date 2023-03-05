@@ -75,7 +75,7 @@ export default {
                 <span
                   style="position: relative; top: 6px"
                   class="material-icons"
-                  >service</span
+                  >emoji_people</span
                 >
                 Services
               </router-link>
