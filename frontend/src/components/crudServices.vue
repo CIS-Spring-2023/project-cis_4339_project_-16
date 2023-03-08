@@ -89,11 +89,14 @@ export default {
         localStorage.setItem("services", JSON.stringify(this.services));
       }
     },
+    emitServicesUpdatedEvent() {
+      this.$emit("service-updated", this.services);
+    }
   },
   computed: {
     activeServices() {
       return this.services.filter((s) => s.isActive);
-    },
+      },
   },
   watch: {
     services() {

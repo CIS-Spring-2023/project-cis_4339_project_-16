@@ -2,9 +2,19 @@
 import useVuelidate from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import axios from "axios";
+import servicesForm from "@/components/servicesform.vue";
 const apiURL = import.meta.env.VITE_ROOT_API;
 
 export default {
+  components: {
+    servicesForm,
+  },
+  props: {
+    services: {
+      type: Array,
+      default: () => [],
+    }
+  },
   setup() {
     return { v$: useVuelidate({ $autoDirty: true }) };
   },
@@ -13,7 +23,6 @@ export default {
       // removed unnecessary extra array to track services
       event: {
         name: "",
-        services: [],
         date: "",
         address: {
           line1: "",
@@ -41,6 +50,12 @@ export default {
           .catch((error) => {
             console.log(error);
           });
+      }
+    },
+    async fetchServices() {
+      const storedServices = localStorage.getItem("services");
+      if (storedServices) {
+        this.services = JSON.parse(storedServices);
       }
     },
   },
@@ -116,80 +131,14 @@ export default {
               </span>
             </label>
           </div>
-
-          <div></div>
-          <div></div>
-          <!-- form field -->
-          <div class="flex flex-col">
-            <label class="block">
-              <span class="text-gray-700">Description</span>
-              <textarea
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                rows="2"
-              ></textarea>
-            </label>
-          </div>
-
-          <div></div>
-          <div></div>
-          <div></div>
-          <!-- form field -->
-          <div class="flex flex-col grid-cols-3">
-            <label>Services Offered at Event</label>
-            <div>
-              <label for="familySupport" class="inline-flex items-center">
-                <input
-                  type="checkbox"
-                  id="familySupport"
-                  value="Family Support"
-                  v-model="event.services"
-                  class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
-                  notchecked
-                />
-                <span class="ml-2">Family Support</span>
-              </label>
-            </div>
-            <div>
-              <label for="adultEducation" class="inline-flex items-center">
-                <input
-                  type="checkbox"
-                  id="adultEducation"
-                  value="Adult Education"
-                  v-model="event.services"
-                  class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
-                  notchecked
-                />
-                <span class="ml-2">Adult Education</span>
-              </label>
-            </div>
-            <div>
-              <label for="youthServices" class="inline-flex items-center">
-                <input
-                  type="checkbox"
-                  id="youthServices"
-                  value="Youth Services Program"
-                  v-model="event.services"
-                  class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
-                  notchecked
-                />
-                <span class="ml-2">Youth Services Program</span>
-              </label>
-            </div>
-            <div>
-              <label for="childhoodEducation" class="inline-flex items-center">
-                <input
-                  type="checkbox"
-                  id="childhoodEducation"
-                  value="Early Childhood Education"
-                  v-model="event.services"
-                  class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
-                  notchecked
-                />
-                <span class="ml-2">Early Childhood Education</span>
-              </label>
-            </div>
-          </div>
         </div>
+        <div></div>
+        <div></div>
+        <div class="event-form">
+          <services-form :services="services"></services-form>
+        </div>
+
+
 
         <!-- grid container -->
         <div
