@@ -25,9 +25,13 @@
       <div class="mt-10">
         <h2 class="font-bold text-2xl mb-4">List of Services</h2>
         <ul class="list-disc pl-5">
-          <li v-for="service in activeServices" :key="service.id">
-            {{ service.description }}
-            <button @click="deleteService(service)">
+          <li v-for="service in activeServices" :key="service.id" class="flex items-center mb-2">
+            <div class="flex-grow">{{ service.description }}</div>
+            <button
+                @click="deleteService(service)"
+                :class="{ 'bg-red-500': service.isActive, 'bg-green-500': !service.isActive }"
+                class="ml-10 py-1 px-3 rounded text-white"
+            >
               {{ service.isActive ? "Deactivate" : "Activate" }}
             </button>
           </li>
