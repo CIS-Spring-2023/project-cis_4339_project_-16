@@ -1,8 +1,6 @@
-<script> //testing
+<script>
 import useVuelidate from "@vuelidate/core";
 import { required, email, alpha, numeric } from "@vuelidate/validators";
-import axios from "axios";
-const apiURL = import.meta.env.VITE_ROOT_API;
 
 export default {
   data() {
@@ -17,21 +15,26 @@ export default {
   methods: {
     async fetchServices() {
       try {
-        const response = await axios.get(`${apiURL}/services`);
-        this.services = response.data;
+        const response = await fetch("/services");
+        this.services = await response.json();
       } catch (error) {
         console.error(error);
       }
     },
     async addService() {
-      try {
-        const response = await axios.post(`${apiURL}/services`, {
-          service: this.service,
-        });
-        this.services.push(response.data);
-        this.service = "";
-      } catch (error) {
-        console.error(error);
+      if (!this.$v.service.$invalid) {
+        try {
+          const response = await fetch("/services", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ service: this.service }),
+          });
+          const data = await response.json();
+          this.services.push(data);
+          this.service = "";
+        } catch (error) {
+          console.error(error);
+        }
       }
     },
   },
@@ -58,10 +61,10 @@ export default {
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                v-model.trim="$v.service.$model"
+                v-model="service.$model"
               />
               <div class="text-red-600">
-                {{ $v.service.$error ? "Service description is required" : "" }}
+                {{ service.$error ? "Service description is required" : "" }}
               </div>
             </label>
             <button
