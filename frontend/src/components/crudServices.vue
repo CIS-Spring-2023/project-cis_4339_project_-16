@@ -1,4 +1,4 @@
-<script>
+<script> //testing
 import useVuelidate from "@vuelidate/core";
 import { required, email, alpha, numeric } from "@vuelidate/validators";
 import axios from "axios";
