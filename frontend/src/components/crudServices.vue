@@ -1,45 +1,39 @@
 <template>
-  <main class="flex flex-col justify-center items-center">
-    <h1 class="font-bold text-4xl text-red-700 tracking-widest mb-10">Services</h1>
-    <div class="flex flex-col items-center mb-10">
-      <form @submit.prevent="addService" class="w-full">
-        <div class="flex items-center">
-          <label class="mr-2">
-            <span class="text-gray-700">Description</span>
-            <span style="color: #ff0000">*</span>
+  <div class="max-w-lg mx-auto">
+    <h2 class="text-red-600 font-bold text-2xl mb-4">Add Service</h2>
+    <form @submit.prevent="addService">
+      <div class="mb-4 flex justify-between">
+        <label class="text-xl font-bold">Description:</label>
+        <input v-model="newService.description" type="text" class="border-2 border-gray-400 px-4 py-2 w-5/6 ml-4">
+        <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded font-bold ml-2">Add</button>
+      </div>
+      <span v-if="newService.descriptionError" style="color: red">{{ newService.descriptionError }}</span>
+    </form>
+
+    <h2 class="text-red-600 font-bold text-2xl mt-8 mb-4">Active Services</h2>
+    <ul>
+      <li v-for="service in activeServices" :key="service.id" class="flex items-center mb-4">
+        <input type="text" v-model="service.description" @change="updateService(service)" class="border-2 border-gray-400 px-4 py-2 w-full">
+        <div class="ml-4 flex items-center space-x-5">
+          <label class="flex items-center mr-2">
+            <input type="radio" v-model="service.isActive" value="true" @change="updateService(service)" class="mr-2">
+            <span class="text-xl">Active</span>
           </label>
-          <input
-            type="text"
-            class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            v-model="service.description"
-          />
-          <div class="text-red-600 ml-2">{{ service.descriptionError }}</div>
-          <button
-            type="submit"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 ml-2 rounded"
-          >
-            Add Service
+          <label class="flex items-center mr-2">
+            <input type="radio" v-model="service.isActive" value="false" @change="updateService(service)" class="mr-2">
+            <span class="text-xl">Inactive</span>
+          </label>
+          <button @click="editService(service)" class="bg-yellow-500 text-white py-2 px-4 rounded font-bold text-xl">
+            Edit
           </button>
         </div>
-      </form>
-      <div class="mt-10">
-        <h2 class="font-bold text-2xl mb-4">List of Services</h2>
-        <ul class="list-disc pl-5">
-          <li v-for="service in activeServices" :key="service.id" class="flex items-center mb-2">
-            <div class="flex-grow">{{ service.description }}</div>
-            <button
-                @click="deleteService(service)"
-                :class="{ 'bg-red-500': service.isActive, 'bg-green-500': !service.isActive }"
-                class="ml-10 py-1 px-3 rounded text-white"
-            >
-              {{ service.isActive ? "Deactivate" : "Activate" }}
-            </button>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </main>
+      </li>
+    </ul>
+  </div>
 </template>
+
+
+
 
 
 
@@ -47,61 +41,61 @@
 export default {
   data() {
     return {
-      service: {
-        id: null,
+      newService: {
         description: "",
-        isActive: true,
-        descriptionError: "",
       },
       services: [],
+      isEditing: false,
+      editedService: {},
     };
   },
   async created() {
-    await this.fetchServices();
+    // You don't need this method anymore
   },
   methods: {
-    async fetchServices() {
-      const storedServices = localStorage.getItem("services");
-      if (storedServices) {
-        this.services = JSON.parse(storedServices);
-      }
-    },
     async addService() {
-      if (!this.service.description) {
-        this.service.descriptionError = "Service description is required";
+      if (!this.newService.description) {
+        this.newService.descriptionError = "Service description is required";
         return;
       }
-      this.service.id = new Date().getTime();
-      this.services.push(this.service);
-      localStorage.setItem("services", JSON.stringify(this.services));
-      this.service = {
-        id: null,
-        description: "",
+      const service = {
+        id: Date.now(),
+        description: this.newService.description,
         isActive: true,
-        descriptionError: "",
       };
+      this.services.push(service);
+      this.newService.description = "";
     },
     deleteService(service) {
       const index = this.services.findIndex((s) => s.id === service.id);
       if (index !== -1) {
         const updatedService = { ...service, isActive: !service.isActive };
         this.services.splice(index, 1, updatedService);
-        localStorage.setItem("services", JSON.stringify(this.services));
       }
     },
-    emitServicesUpdatedEvent() {
-      this.$emit("service-updated", this.services);
-    }
+    updateService(service) {
+      const index = this.services.findIndex((s) => s.id === service.id);
+      if (index !== -1) {
+        this.services.splice(index, 1, service);
+      }
+    },
+    editService(service) {
+      this.isEditing = true;
+      this.editedService = { ...service };
+    },
+    saveEditedService() {
+      const index = this.services.findIndex((s) => s.id === this.editedService.id);
+      if (index !== -1) {
+        this.services.splice(index, 1, this.editedService);
+        this.isEditing = false;
+        this.editedService = {};
+      }
+      },
   },
   computed: {
     activeServices() {
-      return this.services.filter((s) => s.isActive);
+      return this.services.filter((service) => service.isActive);
       },
-  },
-  watch: {
-    services() {
-      this.activeServices = this.services.filter((s) => s.isActive);
-    },
   },
 };
 </script>
