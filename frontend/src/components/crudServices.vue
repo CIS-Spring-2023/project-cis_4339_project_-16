@@ -34,64 +34,71 @@
 
 
 <script>
+import eventForm from "@/components/eventForm.vue";
 export default {
+  components: {
+    eventForm
+  },
   data() {
     return {
       newService: {
         description: "",
       },
-      services: [],
+      services: [{
+        id: 1,
+        description: "After School Service",
+        isActive: true
+      }],
       isEditing: false,
       editedService: {},
     };
   },
-  async created() {
-    // You don't need this method anymore
+  computed: {
+    activeServices() {
+      return this.services.filter(service => service.isActive);
+    }
   },
   methods: {
-    async addService() {
-      if (!this.newService.description) {
-        this.newService.descriptionError = "Service description is required";
+    addService() {
+      if (this.newService.description.trim() === "") {
+        this.newService.descriptionError = "Description is required";
         return;
       }
-      const service = {
-        id: Date.now(),
+      this.newService.descriptionError = null;
+      const newId = this.services.length + 1;
+      this.services.push({
+        id: newId,
         description: this.newService.description,
-        isActive: true,
-      };
-      this.services.push(service);
+        isActive: true
+      });
       this.newService.description = "";
-    },
-    deleteService(service) {
-      const index = this.services.findIndex((s) => s.id === service.id);
-      if (index !== -1) {
-        const updatedService = { ...service, isActive: !service.isActive };
-        this.services.splice(index, 1, updatedService);
-      }
-    },
-    updateService(service) {
-      const index = this.services.findIndex((s) => s.id === service.id);
-      if (index !== -1) {
-        this.services.splice(index, 1, service);
-      }
     },
     editService(service) {
       this.isEditing = true;
-      this.editedService = { ...service };
+      this.editedService = Object.assign({}, service);
     },
-    saveEditedService() {
-      const index = this.services.findIndex((s) => s.id === this.editedService.id);
-      if (index !== -1) {
-        this.services.splice(index, 1, this.editedService);
-        this.isEditing = false;
-        this.editedService = {};
-      }
-      },
-  },
-  computed: {
-    activeServices() {
-      return this.services.filter((service) => service.isActive);
-      },
-  },
+    updateService(service) {
+      const index = this.services.findIndex(s => s.id === service.id);
+      this.services[index] = Object.assign({}, service);
+    },
+    cancelEdit() {
+      this.isEditing = false;
+      this.editedService = {};
+    },
+    saveEdit() {
+      const index = this.services.findIndex(s => s.id === this.editedService.id);
+      this.services[index] = Object.assign({}, this.editedService);
+      this.isEditing = false;
+      this.editedService = {};
+    },
+    deleteService(service) {
+      const index = this.services.findIndex(s => s.id === service.id);
+      this.services.splice(index, 1);
+    },
+    toggleServiceActive(service) {
+      const index = this.services.findIndex(s => s.id === service.id);
+      this.services[index].isActive = !this.services[index].isActive;
+    }
+  }
 };
 </script>

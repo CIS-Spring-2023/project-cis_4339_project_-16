@@ -2,11 +2,21 @@
 import useVuelidate from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import axios from "axios";
+import { useLoggedInUserStore } from "@/store/loggedInUser";
 const apiURL = import.meta.env.VITE_ROOT_API;
 
 export default {
   setup() {
-    return { v$: useVuelidate({ $autoDirty: true }) };
+    const user = useLoggedInUserStore();
+    return { user,
+      v$: useVuelidate({ $autoDirty: true })
+    };
+  },
+  props: {
+    services: {
+      type: Array,
+      default: () => []
+    },
   },
   data() {
     return {
@@ -61,6 +71,7 @@ export default {
   },
 };
 </script>
+
 <template>
   <main>
     <div>
@@ -125,24 +136,22 @@ export default {
         </div>
         <div></div>
         <div></div>
+
+
         <div class="event-form">
-          <p>{{ event.services }}</p>
           <h2 class="font-bold text-2xl mb-4">Services Offered at Event</h2>
-          <div v-for="service in event.services" :key="service.id" class="flex items-center mb-2">
-
-
-        <input
-          type="checkbox"
-          :id="service.id"
-          :value="service.isActive"
-          class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
-        />
-            <p>{{ service }}</p>
-        <label :for="service.id" class="inline-flex items-center">{{ service.description }}</label>
-    </div>
+          <div v-for="service in services" :key="service.id" class="flex items-center mb-2">
+            <input
+              type="checkbox"
+              :id="service.id"
+              :value="service.isActive"
+              :checked="service.isActive"
+              v-model="service.isActive"
+              class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+            <label :for="service.id" class="inline-flex items-center">{{ service.description }}</label>
+          </div>
         </div>
-
-
 
         <!-- grid container -->
         <div

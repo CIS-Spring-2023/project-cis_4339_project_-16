@@ -9,10 +9,14 @@ export const useLoggedInUserStore = defineStore({
     return {
       name: "",
       isLoggedIn: false,
+      services: [],
     }
   },
   // equivalent to methods in components, perfect to define business logic
   actions: {
+    addService(service) {
+      this.services.push(service)
+    },
     async login(username, password) {
       try {
         const response = await apiLogin(username, password);
@@ -42,4 +46,4 @@ function apiLogin(u, p) {
   if (p === "ed") return Promise.resolve({ isAllowed: false });
   return Promise.reject(new Error("invalid credentials"));
 }
-
+export default useLoggedInUserStore;
