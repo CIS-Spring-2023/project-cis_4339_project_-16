@@ -34,11 +34,7 @@
 
 
 <script>
-import eventForm from "@/components/eventForm.vue";
 export default {
-  components: {
-    eventForm
-  },
   data() {
     return {
       newService: {

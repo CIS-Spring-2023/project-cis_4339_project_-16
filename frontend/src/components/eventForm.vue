@@ -24,7 +24,22 @@ export default {
       event: {
         name: "",
         date: "",
-        services: [],
+        services: [{
+          id: 1,
+          description: "After School Service",
+          isActive: true
+        },
+          {
+            id: 2,
+            description: "Medical Testing",
+            isActive: true
+          },
+          {
+            id: 3,
+            description: "Food Truck",
+            isActive: false
+          }
+        ],
         address: {
           line1: "",
           line2: "",
@@ -137,21 +152,21 @@ export default {
         <div></div>
         <div></div>
 
-
         <div class="event-form">
           <h2 class="font-bold text-2xl mb-4">Services Offered at Event</h2>
-          <div v-for="service in services" :key="service.id" class="flex items-center mb-2">
+          <div v-for="service in event.services" :key="service.id" class="flex items-center mb-2">
             <input
-              type="checkbox"
-              :id="service.id"
-              :value="service.isActive"
-              :checked="service.isActive"
-              v-model="service.isActive"
-              class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
+                type="checkbox"
+                :id="service.id"
+                :value="service.isActive"
+                :checked="service.isActive"
+                v-model="service.isActive"
+                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50 mr-2"
             />
             <label :for="service.id" class="inline-flex items-center">{{ service.description }}</label>
           </div>
         </div>
+
 
         <!-- grid container -->
         <div
