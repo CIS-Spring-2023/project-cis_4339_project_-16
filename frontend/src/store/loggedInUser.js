@@ -37,7 +37,10 @@ export const useLoggedInUserStore = defineStore({
 
       // we could do other stuff like redirecting the user
     }
-  }
+  },
+  persist: {
+    storage:sessionStorage
+  },
 });
 
 //simulate a login - we will later use our backend to handle authentication
