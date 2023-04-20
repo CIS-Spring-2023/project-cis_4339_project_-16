@@ -163,7 +163,7 @@ export default {
                   class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
                   notchecked
                 />
-              <label :for="service.id" class="ml-2">   {{ service.servname }}</label>
+              <label :for="service.id" class="ml-2">   {{ service.servicename }}</label>
             </div>
           </div>
         </div>

@@ -153,7 +153,15 @@ router.delete('/:id', (req, res, next) => {
 router.get('/zip', (req, res, next) => {
   clients.aggregate([
     {
-      $group: {_id: "$address.zip", count: {$sum: 1}}
+      $match: {
+        "address.zip": { $exists: true, $ne: "" }
+      }
+    },
+    {
+      $group: {
+        _id: "$address.zip",
+        count: { $sum: 1 }
+      }
     }
   ], (error, data) => {
     if (error) {
@@ -163,5 +171,7 @@ router.get('/zip', (req, res, next) => {
     }
   })
 })
+
+
 
 module.exports = router

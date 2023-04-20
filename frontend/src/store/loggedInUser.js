@@ -49,7 +49,7 @@ function apiLogin(u, p) {
   if (u === "editor" && p === "editor") return Promise.resolve({ isAllowed: true, name: "John Doe" });
   if (p === "editor") return Promise.resolve({ isAllowed: false });
 
-  // viwer log in credentials
+  // viewer log in credentials
   if (u === "viewer" && p === "viewer") return Promise.resolve({ isAllowed2: true, name: "Jane Doe" });
   if (p === "viewer") return Promise.resolve({ isAllowed2: false });
 

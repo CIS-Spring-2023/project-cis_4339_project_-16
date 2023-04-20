@@ -3,7 +3,7 @@
 import { DateTime } from 'luxon'
 import axios from 'axios'
 import AttendanceChart from './barChart.vue'
-import ZipChart from "@/components/donutZipChart.vue";
+import DonutZip from './donutZipChart.vue'
 const apiURL = import.meta.env.VITE_ROOT_API
 
 export default {
@@ -11,20 +11,20 @@ export default {
     // call to display bar chart
     AttendanceChart,
     // call to display donut chart
-    ZipChart,
+    DonutZip   
   },
   data() {
     return {
       recentEvents: [],
-      zips: [],
+      recentZips: [],
       labels: [],
       chartData: [],
-      zipLabels: [],
-      zipChartData: [],
+      labels2: [],
+      chartData2: [],
       loading: false,
       error: null,
-      zipLoading: false,
-      zipError: null
+      loading2: false,
+      error2: null
     }
   },
   mounted() {
@@ -65,38 +65,6 @@ export default {
       }
       this.loading = false
     },
-    async getZipData() {
-      try {
-        this.zipError = null
-        this.zipLoading = true
-        const response = await axios.get(`${apiURL}/clients/zip`)
-        const data = response.data
-        this.zips = response.data
-        this.zipLabels = data.map((item) => item._id)
-        this.zipChartData = data.map((item) => item.count)
-      } catch (err) {
-        if (err.response) {
-          // client received an error response (5xx, 4xx)
-          this.zipError = {
-            title: 'Server Response',
-            message: err.message
-          }
-        } else if (err.request) {
-          // client never received a response, or request never left
-          this.zipError = {
-            title: 'Unable to Reach Server',
-            message: err.message
-          }
-        } else {
-          // There's probably an error in your code
-          this.zipError = {
-            title: 'Application Error',
-            message: err.message
-          }
-        }
-      }
-      this.zipLoading = false
-    },
     formattedDate(datetimeDB) {
       const dt = DateTime.fromISO(datetimeDB, {
         zone: 'utc'
@@ -108,6 +76,39 @@ export default {
     // method to allow click through table to event details
     editEvent(eventID) {
       this.$router.push({ name: 'eventdetails', params: { id: eventID } })
+    },    
+    async getZipData() {
+      try {
+        this.error2 = null
+        this.loading2 = true
+        const response = await axios.get(`${apiURL}/clients/zip`)
+        const data = response.data
+        this.recentZips = response.data
+        console.log(response.data)
+        this.labels2 = data.map((item) => item._id)
+        this.chartData2 = data.map((item) => item.count)
+      } catch (err) {
+        if (err.response) {
+          // client received an error response (5xx, 4xx)
+          this.error2 = {
+            title: 'Server Response',
+            message: err.message
+          }
+        } else if (err.request) {
+          // client never received a response, or request never left
+          this.error2 = {
+            title: 'Unable to Reach Server',
+            message: err.message
+          }
+        } else {
+          // There's probably an error in your code
+          this.error2 = {
+            title: 'Application Error',
+            message: err.message
+          }
+        }
+      }
+      this.loading2 = false
     }
   }
 }
@@ -195,7 +196,7 @@ export default {
             </thead>
             <tbody class="divide-y divide-gray-300">
               <tr
-                v-for="zip in zips"
+                v-for="zip in recentZips"
                 :key="zip._id"
               >
                 <td class="p-2 text-left">{{ zip._id }}</td>
@@ -205,15 +206,15 @@ export default {
           </table>
           <div>
             <br>
-            <ZipChart
-              v-if="!zipLoading && !zipError"
-              :label="zipLabels"
-              :chart-data="zipChartData"
-            ></ZipChart>
+            <DonutZip
+              v-if="!loading2 && !error2"
+              :label="labels2"
+              :chart-data="chartData2"
+            ></DonutZip>
             <br>
 
             <!-- Start of loading animation -->
-            <div class="mt-40" v-if="zipLoading">
+            <div class="mt-40" v-if="loading2">
               <p
                 class="text-6xl font-bold text-center text-gray-500 animate-pulse"
               >
@@ -223,12 +224,12 @@ export default {
             <!-- End of loading animation -->
 
             <!-- Start of error alert -->
-            <div class="mt-12 bg-red-50" v-if="zipError">
+            <div class="mt-12 bg-red-50" v-if="error2">
               <h3 class="px-4 py-1 text-4xl font-bold text-white bg-red-800">
-                {{ zipError.title }}
+                {{ error2.title }}
               </h3>
               <p class="p-4 text-lg font-bold text-red-900">
-                {{ zipError.message }}
+                {{ error2.message }}
               </p>
             </div>
             <!-- End of error alert -->
