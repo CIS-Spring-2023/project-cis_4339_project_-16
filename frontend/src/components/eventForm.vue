@@ -1,92 +1,77 @@
+<!-- eslint-disable prettier/prettier -->
 <script>
-import useVuelidate from "@vuelidate/core";
-import { required } from "@vuelidate/validators";
-import axios from "axios";
-import { useLoggedInUserStore } from "@/store/loggedInUser";
-const apiURL = import.meta.env.VITE_ROOT_API;
+import useVuelidate from '@vuelidate/core'
+import { required } from '@vuelidate/validators'
+import axios from 'axios'
+const apiURL = import.meta.env.VITE_ROOT_API
 
 export default {
   setup() {
-    const user = useLoggedInUserStore();
-    return { user,
-      v$: useVuelidate({ $autoDirty: true })
-    };
-  },
-  props: {
-    services: {
-      type: Array,
-      default: () => []
-    },
+    return { v$: useVuelidate({ $autoDirty: true }) }
   },
   data() {
     return {
       // removed unnecessary extra array to track services
       event: {
-        name: "",
-        date: "",
-        services: [{
-          id: 1,
-          description: "After School Service",
-          isActive: true
-        },
-          {
-            id: 2,
-            description: "Medical Testing",
-            isActive: true
-          },
-          {
-            id: 3,
-            description: "Food Truck",
-            isActive: false
-          }
-        ],
+        name: '',
+        services: [],
+        date: '',
         address: {
-          line1: "",
-          line2: "",
-          city: "",
-          county: "",
-          zip: "",
+          line1: '',
+          line2: '',
+          city: '',
+          county: '',
+          zip: ''
         },
-        description: "",
+        description: ''
       },
-    };
+
+      services: []
+    }
+  },
+  async mounted() {
+    try {
+      const response = await axios.get(`${apiURL}/services?status=Active`)
+      this.services = response.data
+    } catch (error) {
+      console.log(error)
+    }
+  },
+  computed: {
+    activeServices() {
+      return this.services.filter(service => service.status === 'Active')
+    }
   },
   methods: {
     async handleSubmitForm() {
       // Checks to see if there are any errors in validation
-      const isFormCorrect = await this.v$.$validate();
+      const isFormCorrect = await this.v$.$validate()
       // If no errors found. isFormCorrect = True then the form is submitted
       if (isFormCorrect) {
         axios
           .post(`${apiURL}/events`, this.event)
           .then(() => {
-            alert("Event has been added.");
-            this.$router.push({ name: "findevents" });
+            alert('Event has been added.')
+            this.$router.push({ name: 'findevents' })
           })
           .catch((error) => {
-            console.log(error);
-          });
+            console.log(error)
+          })
       }
-    },
-    async fetchServices() {
-      const storedServices = localStorage.getItem("services");
-      if (storedServices) {
-        this.services = JSON.parse(storedServices);
-      }
-    },
+    }
   },
   // sets validations for the various data properties
   validations() {
     return {
       event: {
         name: { required },
-        date: { required },
-      },
-    };
-  },
-};
+        date: { required }
+      }
+    }
+  }
+}
 </script>
-
+<!-- eslint-disable prettier/prettier -->
 <template>
   <main>
     <div>
@@ -148,26 +133,40 @@ export default {
               </span>
             </label>
           </div>
-        </div>
-        <div></div>
-        <div></div>
 
-        <div class="event-form">
-          <h2 class="font-bold text-2xl mb-4">Services Offered at Event</h2>
-          <div v-for="service in event.services" :key="service.id" class="flex items-center mb-2">
-            <input
-                type="checkbox"
-                :id="service.id"
-                :value="service.isActive"
-                :checked="service.isActive"
-                v-model="service.isActive"
-                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50 mr-2"
-            />
-            <label :for="service.id" class="inline-flex items-center">{{ service.description }}</label>
+          <div></div>
+          <div></div>
+          <!-- form field -->
+          <div class="flex flex-col">
+            <label class="block">
+              <span class="text-gray-700">Description</span>
+              <textarea
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                rows="2"
+              ></textarea>
+            </label>
+          </div>
+
+          <div></div>
+          <div></div>
+          <div></div>
+          <!-- form field -->
+          <div class="flex flex-col grid-cols-3">
+            <label>Services Offered at Event</label>
+            <!-- list of active services as checkboxes-->
+            <div v-for="service in activeServices" :key="service._id">
+              <input
+                  type="checkbox"
+                  :id="service._id"
+                  :value="service._id"
+                  v-model="event.services"
+                  class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
+                  notchecked
+                />
+              <label :for="service.id" class="ml-2">   {{ service.servname }}</label>
+            </div>
           </div>
         </div>
-
-
         <!-- grid container -->
         <div
           class="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"

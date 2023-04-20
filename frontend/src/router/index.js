@@ -1,58 +1,72 @@
-import { createRouter, createWebHistory } from "vue-router";
+/* eslint-disable prettier/prettier */
+import { createRouter, createWebHistory } from 'vue-router'
 
 // make all paths and names lowercase for consistency
 const routes = [
   {
-    path: "/",
+    path: '/',
     props: true,
-    component: () => import("../components/homePage.vue"),
+    component: () => import('../components/homePage.vue')
   },
   {
-    path: "/login",
-    name: "login",
-    component: () => import("../components/login.vue"),
-  },
-  {
-    path: "/crudService",
-    name: "crudService",
-    component: () => import("../components/crudServices.vue"),
-  },
-  {
-    path: "/intakeform",
-    name: "intakeform",
+    path: '/intakeform',
+    name: 'intakeform',
     props: true,
-    component: () => import("../components/intakeForm.vue"),
+    component: () => import('../components/intakeForm.vue')
   },
   {
-    path: "/findclient",
-    name: "findclient",
-    component: () => import("../components/findClient.vue"),
+    path: '/findclient',
+    name: 'findclient',
+    component: () => import('../components/findClient.vue')
   },
   {
-    path: "/updateclient/:id",
-    name: "updateclient",
+    path: '/updateclient/:id',
+    name: 'updateclient',
     props: true,
-    component: () => import("../components/updateClient.vue"),
+    component: () => import('../components/updateClient.vue')
   },
   {
-    path: "/eventform",
-    name: "eventform",
-    component: () => import("../components/eventForm.vue"),
+    path: '/eventform',
+    name: 'eventform',
+    component: () => import('../components/eventForm.vue')
   },
   {
-    path: "/findevents",
-    name: "findevents",
-    component: () => import("../components/findEvents.vue"),
+    path: '/findevents',
+    name: 'findevents',
+    component: () => import('../components/findEvents.vue')
   },
   {
-    path: "/eventdetails/:id",
-    name: "eventdetails",
+    path: '/eventdetails/:id',
+    name: 'eventdetails',
     props: true,
-    component: () => import("../components/eventDetails.vue"),
+    component: () => import('../components/eventDetails.vue')
   },
-];
+  {
+    path: '/serviceForm',
+    name: 'serviceForm',
+    props: true,
+    component: () => import('../components/serviceForm.vue')
+  },
+  {
+    path: '/updateService/:id',
+    name: 'updateService',
+    props: true,
+    component: () => import('../components/updateService.vue')
+  },
+  {
+    path: "/logIn",
+    name: "logIn",
+    component: () => import('../components/logIn.vue')
+  },
+  {
+    path: '/findService',
+    name: 'findService',
+    component: () => import('../components/findService.vue')
+  }
+]
 const router = createRouter({
   history: createWebHistory(),
-  routes,
-});
-export default router;
+  routes
+})
+export default router
+

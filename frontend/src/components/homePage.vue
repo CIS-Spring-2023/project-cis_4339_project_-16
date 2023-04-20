@@ -1,114 +1,114 @@
+<!-- eslint-disable prettier/prettier -->
 <script>
-import { DateTime } from "luxon";
-import axios from "axios";
-import AttendanceChart from "./barChart.vue";
-import PieChart from "./pieChart.vue";
-const apiURL = import.meta.env.VITE_ROOT_API;
+import { DateTime } from 'luxon'
+import axios from 'axios'
+import AttendanceChart from './barChart.vue'
+import donutzipChart from "@/components/donutzipChart.vue";
+const apiURL = import.meta.env.VITE_ROOT_API
 
 export default {
   components: {
+    // call to display bar chart
     AttendanceChart,
-    PieChart,
+    // call to display donut chart
+    donutzipChart,
   },
   data() {
     return {
       recentEvents: [],
       labels: [],
       chartData: [],
-      pieLabels: ["77433", "77434", "77436", "77437"],
-      pieChartData: [5, 8, 2, 3],
+      ziplabels: [],
+      zipchartData: [],
       loading: false,
-      error: null,
-    };
+      error: null
+    }
   },
   mounted() {
-    this.getAttendanceData();
-    // this.getZipCodes();
+    this.getAttendanceData()
+    this.getZipData()
   },
   methods: {
     async getAttendanceData() {
       try {
-        this.error = null;
-        this.loading = true;
-        const response = await axios.get(`${apiURL}/events/attendance`);
-        this.recentEvents = response.data;
+        this.error = null
+        this.loading = true
+        const response = await axios.get(`${apiURL}/events/attendance`)
+        this.recentEvents = response.data
         this.labels = response.data.map(
           (item) => `${item.name} (${this.formattedDate(item.date)})`
-        );
-        this.chartData = response.data.map((item) => item.attendees.length);
+        )
+        this.chartData = response.data.map((item) => item.attendees.length)
       } catch (err) {
         if (err.response) {
           // client received an error response (5xx, 4xx)
           this.error = {
-            title: "Server Response",
-            message: err.message,
-          };
+            title: 'Server Response',
+            message: err.message
+          }
         } else if (err.request) {
           // client never received a response, or request never left
           this.error = {
-            title: "Unable to Reach Server",
-            message: err.message,
-          };
+            title: 'Unable to Reach Server',
+            message: err.message
+          }
         } else {
           // There's probably an error in your code
           this.error = {
-            title: "Application Error",
-            message: err.message,
-          };
+            title: 'Application Error',
+            message: err.message
+          }
         }
       }
-      this.loading = false;
+      this.loading = false
     },
-    // async getZipCodes() {
-    // try {
-    // this.error = null;
-    // this.loading = true;
-    // const zipData = [
-    // ];
-    // const response = await axios.get(`${apiURL}/client/zipcode`);
-    // this.zipCodes = response.data;
-    // this.zipLabels = zipData.map((zip) => zip.zipcode);
-    // this.zipChartData = zipData.map((zip) => zip.count);
-    // console.log(this.zipLabels);
-    // } catch (err) {
-    // if (err.response) {
-    // client received an error response (5xx, 4xx)
-    // this.error = {
-    // title: "Server Response",
-    // message: err.message,
-    // };
-    // } else if (err.request) {
-    // client never received a response, or request never left
-    // this.error = {
-    // title: "Unable to Reach Server",
-    // message: err.message,
-    // };
-    // } else {
-    // There's probably an error in your code
-    // this.error = {
-    // title: "Application Error",
-    // message: err.message,
-    // };
-    // }
-    // }
-    // this.loading = false;
-    // },
+    async getZipData() {
+      try {
+        this.error = null
+        this.loading = true
+        const response = await axios.get(`${apiURL}/clients/zip`)
+        const data = response.data
+        this.ziplabels = data.map((item) => item._id)
+        this.zipchartData = data.map((item) => item.count)
+      } catch (err) {
+        if (err.response) {
+          // client received an error response (5xx, 4xx)
+          this.error = {
+            title: 'Server Response',
+            message: err.message
+          }
+        } else if (err.request) {
+          // client never received a response, or request never left
+          this.error = {
+            title: 'Unable to Reach Server',
+            message: err.message
+          }
+        } else {
+          // There's probably an error in your code
+          this.error = {
+            title: 'Application Error',
+            message: err.message
+          }
+        }
+      }
+      this.loading = false
+    },
     formattedDate(datetimeDB) {
       const dt = DateTime.fromISO(datetimeDB, {
-        zone: "utc",
-      });
+        zone: 'utc'
+      })
       return dt
         .setZone(DateTime.now().zoneName, { keepLocalTime: true })
-        .toLocaleString();
+        .toLocaleString()
     },
     // method to allow click through table to event details
     editEvent(eventID) {
-      this.$router.push({ name: "eventdetails", params: { id: eventID } });
-    },
-  },
-};
+      this.$router.push({ name: 'eventdetails', params: { id: eventID } })
+    }
+  }
+}
 </script>
-
+<!-- eslint-disable prettier/prettier -->
 <template>
   <main>
     <div>
@@ -144,11 +144,16 @@ export default {
             </tbody>
           </table>
           <div>
+            <br>
+            <h2 class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10">Events Attendance</h2>
+            <br>
             <AttendanceChart
               v-if="!loading && !error"
               :label="labels"
               :chart-data="chartData"
             ></AttendanceChart>
+            <br>
+            
 
             <!-- Start of loading animation -->
             <div class="mt-40" v-if="loading">
@@ -170,26 +175,18 @@ export default {
               </p>
             </div>
             <!-- End of error alert -->
-            <!--Table for zip and number of clients-->
-            <table class="min-w-full shadow-md rounded">
-              <thead class="bg-gray-50 text-xl">
-                <tr class="p-4 text-left">
-                  <th class="p-4 text-left">Zip Code</th>
-                  <th class="p-4 text-left">Number of Clients</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-300">
-                <tr v-for="(zipCode, i) in pieLabels">
-                  <td class="p-2 text-left">{{ zipCode }}</td>
-                  <td class="p-2 text-left">{{ this.pieChartData[i] }}</td>
-                </tr>
-              </tbody>
-            </table>
-            <div>
-              <PieChart :label="pieLabels" :pie-chart-data="pieChartData"></PieChart>
-            </div>
           </div>
-        </div>
+          <div>
+            <br>
+            <h2 class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10">Clients by Zip Code</h2>
+            <br>
+            <donutzip-chart
+              v-if="!loading && !error"
+              :label="ziplabels"
+              :chart-data="zipchartData"
+            ></donutzip-chart>
+          </div>
+      </div>
       </div>
     </div>
   </main>

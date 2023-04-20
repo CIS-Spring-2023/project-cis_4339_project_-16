@@ -1,82 +1,90 @@
+<!-- eslint-disable prettier/prettier -->
 <script>
-import useVuelidate from "@vuelidate/core";
-import { required } from "@vuelidate/validators";
-import axios from "axios";
-import { DateTime } from "luxon";
-const apiURL = import.meta.env.VITE_ROOT_API;
+import useVuelidate from '@vuelidate/core'
+import { required } from '@vuelidate/validators'
+import axios from 'axios'
+import { DateTime } from 'luxon'
+const apiURL = import.meta.env.VITE_ROOT_API
 
 export default {
-  props: ["id"],
+  props: ['id'],
   setup() {
-    return { v$: useVuelidate({ $autoDirty: true }) };
+    return { v$: useVuelidate({ $autoDirty: true }) }
   },
   data() {
     return {
       clientAttendees: [],
       event: {
-        name: "",
+        name: '',
         services: [],
-        date: "",
+        date: '',
         address: {
-          line1: "",
-          line2: "",
-          city: "",
-          county: "",
-          zip: "",
+          line1: '',
+          line2: '',
+          city: '',
+          county: '',
+          zip: ''
         },
-        description: "",
-        attendees: [],
+        description: '',
+        attendees: []
       },
-    };
+      services: [],
+      selectedServices: []
+    }
   },
   created() {
     axios.get(`${apiURL}/events/id/${this.$route.params.id}`).then((res) => {
-      this.event = res.data;
-      this.event.date = this.formattedDate(this.event.date);
+      this.event = res.data
+      this.event.date = this.formattedDate(this.event.date)
       this.event.attendees.forEach((e) => {
         axios.get(`${apiURL}/clients/id/${e}`).then((res) => {
-          this.clientAttendees.push(res.data);
-        });
-      });
-    });
+          this.clientAttendees.push(res.data)
+        })
+      })
+    })
+    axios.get(`${apiURL}/services`).then((res) => {
+      this.services = res.data.filter(s => s.status === 'Active')
+      this.selectedServices = this.services.filter(s => this.event.services.includes(s._id))
+    })
   },
   methods: {
     // better formatted date, converts UTC to local time
     formattedDate(datetimeDB) {
       const dt = DateTime.fromISO(datetimeDB, {
-        zone: "utc",
-      });
+        zone: 'utc'
+      })
       return dt
         .setZone(DateTime.now().zoneName, { keepLocalTime: true })
-        .toISODate();
+        .toISODate()
     },
     handleEventUpdate() {
       axios.put(`${apiURL}/events/update/${this.id}`, this.event).then(() => {
-        alert("Update has been saved.");
-        this.$router.back();
-      });
+        alert('Update has been saved.')
+        this.$router.back()
+      })
     },
     editClient(clientID) {
-      this.$router.push({ name: "updateclient", params: { id: clientID } });
+      this.$router.push({ name: 'updateclient', params: { id: clientID } })
     },
     eventDelete() {
       axios.delete(`${apiURL}/events/${this.id}`).then(() => {
-        alert("Event has been deleted.");
-        this.$router.push({ name: "findevents" });
-      });
-    },
+        alert('Event has been deleted.')
+        this.$router.push({ name: 'findevents' })
+      })
+    }
   },
   // sets validations for the various data properties
   validations() {
     return {
       event: {
         name: { required },
-        date: { required },
-      },
-    };
-  },
-};
+        date: { required }
+      }
+    }
+  }
+}
 </script>
+<!-- eslint-disable prettier/prettier -->
 <template>
   <main>
     <div>
@@ -157,61 +165,19 @@ export default {
           <!-- form field -->
           <div class="flex flex-col grid-cols-3">
             <label>Services Offered at Event</label>
-            <div>
-              <label for="familySupport" class="inline-flex items-center">
-                <input
+            <!-- list of active services as checkboxes-->
+            <div v-for="service in services" :key="service._id">
+              <input
                   type="checkbox"
-                  id="familySupport"
-                  value="Family Support"
+                  :id="service._id"
+                  :value="service._id"
                   v-model="event.services"
                   class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
-                  notchecked
                 />
-                <span class="ml-2">Family Support</span>
-              </label>
-            </div>
-            <div>
-              <label for="adultEducation" class="inline-flex items-center">
-                <input
-                  type="checkbox"
-                  id="adultEducation"
-                  value="Adult Education"
-                  v-model="event.services"
-                  class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
-                  notchecked
-                />
-                <span class="ml-2">Adult Education</span>
-              </label>
-            </div>
-            <div>
-              <label for="youthServices" class="inline-flex items-center">
-                <input
-                  type="checkbox"
-                  id="youthServices"
-                  value="Youth Services Program"
-                  v-model="event.services"
-                  class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
-                  notchecked
-                />
-                <span class="ml-2">Youth Services Program</span>
-              </label>
-            </div>
-            <div>
-              <label for="childhoodEducation" class="inline-flex items-center">
-                <input
-                  type="checkbox"
-                  id="childhoodEducation"
-                  value="Early Childhood Education"
-                  v-model="event.services"
-                  class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
-                  notchecked
-                />
-                <span class="ml-2">Early Childhood Education</span>
-              </label>
+              <label :for="service.id" class="ml-2">   {{ service.servname }}</label>
             </div>
           </div>
         </div>
-
         <!-- grid container -->
         <div
           class="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
@@ -339,7 +305,7 @@ export default {
                   :key="client._id"
                 >
                   <td class="p-2 text-left">
-                    {{ client.firstName + " " + client.lastName }}
+                    {{ client.firstName + ' ' + client.lastName }}
                   </td>
                   <td class="p-2 text-left">{{ client.address.city }}</td>
                   <td class="p-2 text-left">

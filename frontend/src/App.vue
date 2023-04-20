@@ -1,113 +1,156 @@
+<!-- eslint-disable prettier/prettier -->
 <script>
-import axios from "axios";
 import { useLoggedInUserStore } from "@/store/loggedInUser";
-const apiURL = import.meta.env.VITE_ROOT_API;
+import axios from 'axios'
+const apiURL = import.meta.env.VITE_ROOT_API
 
 export default {
-  setup() {
-    const user = useLoggedInUserStore();
-    return { user };
-  },
-  name: "App",
+  name: 'App',
   data() {
     return {
-      orgName: "Dataplatform",
-    };
+      orgName: 'CIS4339 Final Project'
+    }
   },
   created() {
     axios.get(`${apiURL}/org`).then((res) => {
-      this.orgName = res.data.name;
-    });
+      this.orgName = res.data.name
+    })
   },
-};
+  setup() {
+    // function that checks if a user is logged in
+    const user = useLoggedInUserStore();
+    return { user };
+  }
+}
 </script>
+<!-- eslint-disable prettier/prettier -->
 <template>
   <main class="flex flex-row">
     <div id="_container" class="h-screen">
       <header class="w-full">
         <section class="text-center">
-          <img class="m-auto" src="@\assets\DanPersona.svg" />
+          <img class="mx-auto" src="@\assets\DanPersona.svg" />
         </section>
         <nav class="mt-10">
-          <ul class="flex flex-col gap-4">
-            <li>
-              <router-link to="/">
+          <ul class="flex flex-col space-y-4">
+            <!-- Start: Login page -->
+            <li v-if="!user.isLoggedIn && !user.isLoggedIn2">
+              <router-link to="/logIn" class="text-blue-500 hover:text-blue-700 flex items-center">
                 <span
-                  style="position: relative; top: 6px"
-                  class="material-icons"
+                  class="material-icons align-middle"
+                  >login</span
+                >
+                Log In
+              </router-link>
+            </li>
+            <li class="nav-item dropdown" v-if="user.isLoggedIn || user.isLoggedIn2">
+              <a
+                class="text-blue-500 hover:text-blue-700 flex items-center cursor-pointer"
+                id="navbarUserMenuLink"
+                role="button"
+                @click="dropdownVisible = !dropdownVisible"
+              >
+                <span
+                  class="material-icons align-middle"
+                  >person</span
+                >
+                Welcome, {{ user.name }}
+              </a>
+              <ul
+                class="dropdown-menu bg-white rounded-md mt-2 py-2 absolute w-48"
+                :class="{'hidden': !dropdownVisible}"
+                aria-labelledby="navbarUserMenuLink"
+              >
+                <li class="nav-item">
+                  <a href="/" @click="store.logout()" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200">
+                    <span class="material-icons">logout</span>Logout
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <!-- End: Login page -->
+
+            <!-- Start: Dashboard page -->
+            <li>
+              <router-link to="/" class="text-blue-500 hover:text-blue-700 flex items-center">
+                <span
+                  class="material-icons align-middle"
                   >dashboard</span
                 >
                 Dashboard
               </router-link>
             </li>
-            <li>
-              <router-link to="/login">
-                <span
-                  style="position: relative; top: 6px"
-                  class="material-icons"
-                  >login</span
-                >
-                Login
-              </router-link>
-            </li>
-            <li>
-              <router-link v-if="user.isLoggedIn" to="/intakeform">
-                <span
-                  style="position: relative; top: 6px"
-                  class="material-icons"
-                  >people</span
-                >
-                Client Intake Form
-              </router-link>
-            </li>
-            <li>
-              <router-link v-if="user.isLoggedIn" to="/eventform">
-                <span
-                  style="position: relative; top: 6px"
-                  class="material-icons"
-                  >event</span
-                >
-                Create Event
-              </router-link>
-            </li>
-            <li>
-              <router-link v-if="user.isLoggedIn" to="/crudService">
-                <span
-                  style="position: relative; top: 6px"
-                  class="material-icons"
-                  >emoji_people</span
-                >
-                Services
-              </router-link>
-            </li>
-            <li>
-              <router-link v-if="user.isLoggedIn" to="/findclient">
-                <span
-                  style="position: relative; top: 6px"
-                  class="material-icons"
-                  >search</span
-                >
-                Find Client
-              </router-link>
-            </li>
-            <li>
-              <router-link v-if="user.isLoggedIn" to="/findevents">
-                <span
-                  style="position: relative; top: 6px"
-                  class="material-icons"
-                  >search</span
-                >
-                Find Event
-              </router-link>
-            </li>
-          </ul>
-        </nav>
-      </header>
-    </div>
-    <div class="grow w-4/5">
+            <!-- End: Dashboard page -->
+
+<!-- Start: Find client page -->
+<li>
+  <!-- gives access to both users to view this page -->
+  <router-link v-if="user.isLoggedIn || user.isLoggedIn2" to="/findclient" class="text-blue-500 hover:text-blue-700 flex items-center">
+    <span class="material-icons align-middle">search</span>
+    Find Client
+  </router-link>
+</li>
+<!-- End: Find client page -->
+
+<!-- Start: Find event page -->
+<li>
+  <!-- gives access to both users to view this page -->
+  <router-link v-if="user.isLoggedIn || user.isLoggedIn2" to="/findevents" class="text-blue-500 hover:text-blue-700 flex items-center">
+    <span class="material-icons align-middle">search</span>
+    Find Event
+  </router-link>
+</li>
+<!-- End: Find event page -->
+
+<!-- Start: Find service page -->
+<li>
+  <!-- gives access to both users to view this page -->
+  <router-link v-if="user.isLoggedIn || user.isLoggedIn2" to="/findService" class="text-blue-500 hover:text-blue-700 flex items-center">
+    <span class="material-icons align-middle">search</span>
+    Find Service
+  </router-link>
+</li>
+<!-- End: Find service page -->
+
+<!-- Start: Client intake form page -->
+<li>
+  <!-- gives access only to editor to use this page -->
+  <router-link v-if="user.isLoggedIn" to="/intakeform" class="text-blue-500 hover:text-blue-700 flex items-center">
+    <span class="material-icons align-middle">people</span>
+    Client Intake Form
+  </router-link>
+</li>
+<!-- End: Client intake form page -->
+
+<!-- Start: Create event form page -->
+<li>
+  <!-- gives access only to editor to use this page -->
+  <router-link v-if="user.isLoggedIn" to="/eventform" class="text-blue-500 hover:text-blue-700 flex items-center">
+    <span class="material-icons align-middle">event</span>
+    Create Event
+  </router-link>
+</li>
+<!-- End: Create event form page -->
+
+<!-- Start: Create service form page -->
+<li>
+  <!-- gives access only to editor to use this page -->
+  <router-link v-if="user.isLoggedIn" to="/serviceForm" class="text-blue-500 hover:text-blue-700 flex items-center">
+    <span class="material-icons align-middle">create</span>
+    Create Service
+  </router-link>
+</li>
+<!-- End: Create service form page -->
+
+</ul>
+</nav>
+</header>
+</div>
+
+<div class="grow w-4/5">
       <section
-        class="justify-end items-center h-24 flex"
-        style="background: linear-gradient(250deg, #c8102e 70%, #efecec 50.6%)"
+        class="justify-end items-center h-24 flex bg-gradient-to-r from-red-700 via-white to-white"
+        style="background-size: 70% 100%"
       >
         <h1 class="mr-20 text-3xl text-white">{{ this.orgName }}</h1>
       </section>
@@ -117,10 +160,3 @@ export default {
     </div>
   </main>
 </template>
-<style>
-#_container {
-  background-color: #c8102e;
-  color: white;
-  padding: 18px;
-}
-</style>
