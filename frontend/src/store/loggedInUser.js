@@ -1,57 +1,52 @@
-/* eslint-disable prettier/prettier */
 import { defineStore } from 'pinia'
+import axios from 'axios'
+import bcrypt from 'bcryptjs' // Import the bcryptjs package
+const apiURL = import.meta.env.VITE_ROOT_API
 
-//defining a store
+// Defining a store
 export const useLoggedInUserStore = defineStore({
-  // id is only required for devtools with the Pinia store
+
   id: 'loggedInUser',
-  //central part of the store
   state: () => {
     return {
       name: "",
-      // users are not logged in by default
-      isLoggedIn: false,
-      isLoggedIn2: false,
+      role: 0,
+      isLoggedIn: false
     }
   },
-  // equivalent to methods in components, perfect to define business logic
   actions: {
     async login(username, password) {
       try {
-        const response = await apiLogin(username, password);
-        this.$patch({
-          isLoggedIn: response.isAllowed,     // editor login check
-          isLoggedIn2: response.isAllowed2,   // viewer login check
-          name: response.name,
-        })
-        this.$router.push("/");
-      } catch(error) {
+        // Hash the password before sending it to the server
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        console.log(username, hashedPassword)
+        const response = await axios.post(`${apiURL}/users/login`, {username, password: hashedPassword});
+        console.log(response)
+        if (response) {
+          this.$patch({
+            isLoggedIn: true,
+            role: response.data.role,
+            name: response.data.username
+          });
+          this.$router.push("/");
+        }
+      } catch (error) {
         console.log(error)
+        alert("Invalid credentials. Please try again.");
       }
     },
     logout() {
-      // clears authentication state
+      // Reset value after user log out
       this.$patch({
         name: "",
-        isLoggedIn: false,
-        isLoggedIn2: false
+        role: 0,
+        isLoggedIn: false
       });
+    },
+    persist: {
+      storage: sessionStorage
     }
   },
-  persist: {
-    storage:sessionStorage
-  },
 });
-
-//hardcoded login credentials for users
-function apiLogin(u, p) {
-  // editor log in credentials
-  if (u === "editor" && p === "editor") return Promise.resolve({ isAllowed: true, name: "John Doe" });
-  if (p === "editor") return Promise.resolve({ isAllowed: false });
-
-  // viewer log in credentials
-  if (u === "viewer" && p === "viewer") return Promise.resolve({ isAllowed2: true, name: "Jane Doe" });
-  if (p === "viewer") return Promise.resolve({ isAllowed2: false });
-
-  return Promise.reject(new Error("invalid credentials"));
-}

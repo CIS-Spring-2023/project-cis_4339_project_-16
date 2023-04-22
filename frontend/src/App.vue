@@ -34,7 +34,7 @@ export default {
         <nav class="mt-10">
           <ul class="flex flex-col space-y-4">
             <!-- Start: Login page -->
-            <li v-if="!user.isLoggedIn && !user.isLoggedIn2">
+            <li v-if="!user.isLoggedIn">
               <router-link to="/logIn" class="text-blue-500 hover:text-blue-700 flex items-center">
                 <span
                   class="material-icons align-middle"
@@ -43,13 +43,13 @@ export default {
                 Log In
               </router-link>
             </li>
-            <li class="nav-item dropdown" v-if="user.isLoggedIn || user.isLoggedIn2">
+            <li class="nav-item dropdown" v-if="user.isLoggedIn">
               <a
                 class="text-blue-500 hover:text-blue-700 flex items-center cursor-pointer"
                 id="navbarUserMenuLink"
                 role="button"
                 @click="dropdownVisible = !dropdownVisible"
-              >
+                >
                 <span
                   class="material-icons align-middle"
                   >person</span
@@ -85,7 +85,7 @@ export default {
 <!-- Start: Find client page -->
 <li>
   <!-- gives access to both users to view this page -->
-  <router-link v-if="user.isLoggedIn || user.isLoggedIn2" to="/findclient" class="text-blue-500 hover:text-blue-700 flex items-center">
+  <router-link v-if="user.isLoggedIn" to="/findclient" class="text-blue-500 hover:text-blue-700 flex items-center">
     <span class="material-icons align-middle">search</span>
     Find Client
   </router-link>
@@ -95,7 +95,7 @@ export default {
 <!-- Start: Find event page -->
 <li>
   <!-- gives access to both users to view this page -->
-  <router-link v-if="user.isLoggedIn || user.isLoggedIn2" to="/findevents" class="text-blue-500 hover:text-blue-700 flex items-center">
+  <router-link v-if="user.isLoggedIn" to="/findevents" class="text-blue-500 hover:text-blue-700 flex items-center">
     <span class="material-icons align-middle">search</span>
     Find Event
   </router-link>
@@ -105,7 +105,7 @@ export default {
 <!-- Start: Find service page -->
 <li>
   <!-- gives access to both users to view this page -->
-  <router-link v-if="user.isLoggedIn || user.isLoggedIn2" to="/findService" class="text-blue-500 hover:text-blue-700 flex items-center">
+  <router-link v-if="user.isLoggedIn" to="/findService" class="text-blue-500 hover:text-blue-700 flex items-center">
     <span class="material-icons align-middle">search</span>
     Find Service
   </router-link>
@@ -115,7 +115,7 @@ export default {
 <!-- Start: Client intake form page -->
 <li>
   <!-- gives access only to editor to use this page -->
-  <router-link v-if="user.isLoggedIn" to="/intakeform" class="text-blue-500 hover:text-blue-700 flex items-center">
+  <router-link v-if="user.isLoggedIn && user.role === '1'" to="/intakeform" class="text-blue-500 hover:text-blue-700 flex items-center">
     <span class="material-icons align-middle">people</span>
     Client Intake Form
   </router-link>
@@ -125,7 +125,7 @@ export default {
 <!-- Start: Create event form page -->
 <li>
   <!-- gives access only to editor to use this page -->
-  <router-link v-if="user.isLoggedIn" to="/eventform" class="text-blue-500 hover:text-blue-700 flex items-center">
+  <router-link v-if="user.isLoggedIn && user.role === '1'" to="/eventform" class="text-blue-500 hover:text-blue-700 flex items-center">
     <span class="material-icons align-middle">event</span>
     Create Event
   </router-link>
@@ -135,7 +135,7 @@ export default {
 <!-- Start: Create service form page -->
 <li>
   <!-- gives access only to editor to use this page -->
-  <router-link v-if="user.isLoggedIn" to="/serviceForm" class="text-blue-500 hover:text-blue-700 flex items-center">
+  <router-link v-if="user.isLoggedIn && user.role === '1'" to="/serviceForm" class="text-blue-500 hover:text-blue-700 flex items-center">
     <span class="material-icons align-middle">create</span>
     Create Service
   </router-link>

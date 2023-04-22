@@ -1,36 +1,26 @@
 const express = require('express')
 const router = express.Router()
 
-// Import your userDataSchema
-const { UserData } = require('../models/models')
+const org = process.env.ORG
 
-// GET user by username
-router.get('/username/:username', (req, res, next) => {
-  UserData.findOne({ username: req.params.username }, (error, data) => {
-    if (error) {
-      return next(error)
-    } else if (!data) {
-      res.status(400).send('User not found')
-    } else {
-      // Return only the username and role, do not expose the password
-      res.json({ username: data.username, role: data.role })
-    }
+// importing data model schemas
+const { users } = require('../models/models')
+
+
+// POST user login
+router.post('/login', (req, res, next) => {
+    const user = req.body;
+    console.log(req.body);
+    users.findOne({ /* org: user.org, */ username: user.username, password: user.password }, (err, user) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send('An error occurred while logging in');
+        } else if (!user) {
+          res.status(401).send('Incorrect username or password');
+        } else {
+          res.status(200).json(user);
+        }
+      });
   })
-})
-
-// POST new user
-router.post('/', (req, res, next) => {
-  const newUser = req.body
-  UserData.create(newUser, (error, data) => {
-    if (error) {
-      return next(error)
-    } else {
-      // Return only the username and role, do not expose the password
-      res.json({ username: data.username, role: data.role })
-    }
-  })
-})
-
-// Other routes for users can be added here
 
 module.exports = router
