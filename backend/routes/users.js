@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 // Import your userDataSchema
-const { UserData } = require('../models/userData')
+const { UserData } = require('../models/models')
 
 // GET user by username
 router.get('/username/:username', (req, res, next) => {
