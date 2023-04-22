@@ -4,11 +4,11 @@ const router = express.Router()
 const org = process.env.ORG
 
 // importing data model schemas
-const { clients } = require('../models/models')
+const { users } = require('../models/models')
 
-// GET 10 most recent clients for org
+// GET 10 most recent services for org
 router.get('/', (req, res, next) => {
-  clients
+  users
     .find({ orgs: org }, (error, data) => {
       if (error) {
         return next(error)
@@ -20,14 +20,14 @@ router.get('/', (req, res, next) => {
     .limit(10)
 })
 
-// GET single client by ID
+// GET single service by ID
 router.get('/id/:id', (req, res, next) => {
   // use findOne instead of find to not return array
-  clients.findOne({ _id: req.params.id, orgs: org }, (error, data) => {
+  users.findOne({ _id: req.params.id, orgs: org }, (error, data) => {
     if (error) {
       return next(error)
     } else if (!data) {
-      res.status(400).send('Client not found')
+      res.status(400).send('User not found')
     } else {
       res.json(data)
     }
@@ -40,19 +40,15 @@ router.get('/search', (req, res, next) => {
   const dbQuery = { orgs: org }
   switch (req.query.searchBy) {
     case 'name':
-      dbQuery.firstName = { $regex: `^${req.query.firstName}`, $options: 'i' }
-      dbQuery.lastName = { $regex: `^${req.query.lastName}`, $options: 'i' }
+      dbQuery.servicename = { $regex: `^${req.query.servicename}`, $options: 'i' }
       break
-    case 'number':
-      dbQuery['phoneNumber.primary'] = {
-        $regex: `^${req.query['phoneNumber.primary']}`,
-        $options: 'i'
-      }
+    case 'servicestatus':
+      dbQuery.status = { $regex: `^${req.query.status}`, $options: 'i' }
       break
     default:
       return res.status(400).send('invalid searchBy')
   }
-  clients.find(dbQuery, (error, data) => {
+  services.find(dbQuery, (error, data) => {
     if (error) {
       return next(error)
     } else {
@@ -61,30 +57,11 @@ router.get('/search', (req, res, next) => {
   })
 })
 
-// GET lookup by phone, verify org membership on frontend
-router.get('/lookup/:phoneNumber', (req, res, next) => {
-  clients.findOne(
-    {
-      ['phoneNumber.primary']: {
-        $regex: `^${req.params.phoneNumber}`,
-        $options: 'i'
-      }
-    },
-    (error, data) => {
-      if (error) {
-        return next(error)
-      } else {
-        res.json(data)
-      }
-    }
-  )
-})
-
-// POST new client
+// POST new service
 router.post('/', (req, res, next) => {
-  const newClient = req.body
-  newClient.orgs = [org]
-  clients.create(newClient, (error, data) => {
+  const newService = req.body
+  newService.orgs = [org]
+  services.create(newService, (error, data) => {
     if (error) {
       return next(error)
     } else {
@@ -93,9 +70,9 @@ router.post('/', (req, res, next) => {
   })
 })
 
-// PUT update client
+// PUT update service
 router.put('/update/:id', (req, res, next) => {
-  clients.findByIdAndUpdate(req.params.id, req.body, (error, data) => {
+  services.findByIdAndUpdate(req.params.id, req.body, (error, data) => {
     if (error) {
       return next(error)
     } else {
@@ -104,9 +81,9 @@ router.put('/update/:id', (req, res, next) => {
   })
 })
 
-// PUT add existing client to org
+// PUT add existing service to org
 router.put('/register/:id', (req, res, next) => {
-  clients.findByIdAndUpdate(
+  services.findByIdAndUpdate(
     req.params.id,
     { $push: { orgs: org } },
     (error, data) => {
@@ -114,15 +91,15 @@ router.put('/register/:id', (req, res, next) => {
         console.log(error)
         return next(error)
       } else {
-        res.send('Client registered with org')
+        res.send('Service registered with org')
       }
     }
   )
 })
 
-// PUT remove existing client from org
+// PUT remove existing service from org
 router.put('/deregister/:id', (req, res, next) => {
-  clients.findByIdAndUpdate(
+  services.findByIdAndUpdate(
     req.params.id,
     { $pull: { orgs: org } },
     (error, data) => {
@@ -130,48 +107,23 @@ router.put('/deregister/:id', (req, res, next) => {
         console.log(error)
         return next(error)
       } else {
-        res.send('Client deregistered with org')
+        res.send('Service deregistered with org')
       }
     }
   )
 })
 
-// hard DELETE client by ID, as per project specifications
+// hard DELETE service by ID, as per project specifications
 router.delete('/:id', (req, res, next) => {
-  clients.findByIdAndDelete(req.params.id, (error, data) => {
+  services.findByIdAndDelete(req.params.id, (error, data) => {
     if (error) {
       return next(error)
     } else if (!data) {
-      res.status(400).send('Client not found')
+      res.status(400).send('Service not found')
     } else {
-      res.send('Client deleted')
+      res.send('Service deleted')
     }
   })
 })
-
-// GET zip codes of clients
-router.get('/zip', (req, res, next) => {
-  clients.aggregate([
-    {
-      $match: {
-        "address.zip": { $exists: true, $ne: "" }
-      }
-    },
-    {
-      $group: {
-        _id: "$address.zip",
-        count: { $sum: 1 }
-      }
-    }
-  ], (error, data) => {
-    if (error) {
-      return next(error)
-    } else {
-      return res.json(data)
-    }
-  })
-})
-
-
 
 module.exports = router

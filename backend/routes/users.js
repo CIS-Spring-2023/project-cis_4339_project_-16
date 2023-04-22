@@ -1,129 +1,36 @@
 const express = require('express')
 const router = express.Router()
 
-const org = process.env.ORG
+// Import your userDataSchema
+const { UserData } = require('../models/userData')
 
-// importing data model schemas
-const { services } = require('../models/models')
-
-// GET 10 most recent services for org
-router.get('/', (req, res, next) => {
-  services
-    .find({ orgs: org }, (error, data) => {
-      if (error) {
-        return next(error)
-      } else {
-        return res.json(data)
-      }
-    })
-    .sort({ updatedAt: -1 })
-    .limit(10)
-})
-
-// GET single service by ID
-router.get('/id/:id', (req, res, next) => {
-  // use findOne instead of find to not return array
-  services.findOne({ _id: req.params.id, orgs: org }, (error, data) => {
+// GET user by username
+router.get('/username/:username', (req, res, next) => {
+  UserData.findOne({ username: req.params.username }, (error, data) => {
     if (error) {
       return next(error)
     } else if (!data) {
-      res.status(400).send('Service not found')
+      res.status(400).send('User not found')
     } else {
-      res.json(data)
+      // Return only the username and role, do not expose the password
+      res.json({ username: data.username, role: data.role })
     }
   })
 })
 
-// GET entries based on search query
-// Ex: '...?firstName=Bob&lastName=&searchBy=name'
-router.get('/search', (req, res, next) => {
-  const dbQuery = { orgs: org }
-  switch (req.query.searchBy) {
-    case 'name':
-      dbQuery.servicename = { $regex: `^${req.query.servicename}`, $options: 'i' }
-      break
-    case 'servicestatus':
-      dbQuery.status = { $regex: `^${req.query.status}`, $options: 'i' }
-      break
-    default:
-      return res.status(400).send('invalid searchBy')
-  }
-  services.find(dbQuery, (error, data) => {
-    if (error) {
-      return next(error)
-    } else {
-      res.json(data)
-    }
-  })
-})
-
-// POST new service
+// POST new user
 router.post('/', (req, res, next) => {
-  const newService = req.body
-  newService.orgs = [org]
-  services.create(newService, (error, data) => {
+  const newUser = req.body
+  UserData.create(newUser, (error, data) => {
     if (error) {
       return next(error)
     } else {
-      res.json(data)
+      // Return only the username and role, do not expose the password
+      res.json({ username: data.username, role: data.role })
     }
   })
 })
 
-// PUT update service
-router.put('/update/:id', (req, res, next) => {
-  services.findByIdAndUpdate(req.params.id, req.body, (error, data) => {
-    if (error) {
-      return next(error)
-    } else {
-      res.json(data)
-    }
-  })
-})
-
-// PUT add existing service to org
-router.put('/register/:id', (req, res, next) => {
-  services.findByIdAndUpdate(
-    req.params.id,
-    { $push: { orgs: org } },
-    (error, data) => {
-      if (error) {
-        console.log(error)
-        return next(error)
-      } else {
-        res.send('Service registered with org')
-      }
-    }
-  )
-})
-
-// PUT remove existing service from org
-router.put('/deregister/:id', (req, res, next) => {
-  services.findByIdAndUpdate(
-    req.params.id,
-    { $pull: { orgs: org } },
-    (error, data) => {
-      if (error) {
-        console.log(error)
-        return next(error)
-      } else {
-        res.send('Service deregistered with org')
-      }
-    }
-  )
-})
-
-// hard DELETE service by ID, as per project specifications
-router.delete('/:id', (req, res, next) => {
-  services.findByIdAndDelete(req.params.id, (error, data) => {
-    if (error) {
-      return next(error)
-    } else if (!data) {
-      res.status(400).send('Service not found')
-    } else {
-      res.send('Service deleted')
-    }
-  })
-})
+// Other routes for users can be added here
 
 module.exports = router
