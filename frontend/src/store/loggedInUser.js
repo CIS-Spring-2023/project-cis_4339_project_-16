@@ -18,11 +18,11 @@ export const useLoggedInUserStore = defineStore({
     async login(username, password) {
       try {
         // Hash the password before sending it to the server
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
+        // const salt = await bcrypt.genSalt(10);
+        // const hashedPassword = await bcrypt.hash(password, salt);
 
-        console.log(username, hashedPassword)
-        const response = await axios.post(`${apiURL}/users/login`, {username, password: hashedPassword});
+        console.log(username, password)
+        const response = await axios.post(`${apiURL}/users/login`, {username, password});
         console.log(response)
         if (response) {
           this.$patch({
