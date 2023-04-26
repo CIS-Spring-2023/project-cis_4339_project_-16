@@ -19,7 +19,7 @@ export default {
       }
     }
   },
-  created() {
+  created() { // retrieves data and populates the data with the initial setup
     axios.get(`${apiURL}/services/id/${this.$route.params.id}`).then((res) => {
       // simplified setting service
       this.service = res.data
@@ -29,7 +29,7 @@ export default {
     window.scrollTo(0, 0)
   },
   methods: {
-    async updateService() {
+    async updateService() { //checks for erros and updates the service object and submits the form
       // Checks to see if there are any errors in validation
       const isFormCorrect = await this.v$.$validate()
       // If no errors found. isFormCorrect = True then the form is submitted
@@ -53,7 +53,7 @@ export default {
       }
     }
   },    
-  validations() {
+  validations() { //defines the parameters for service and status
       return {
         service: {
           servicename: { required },

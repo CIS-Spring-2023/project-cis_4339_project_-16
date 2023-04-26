@@ -28,7 +28,7 @@ export default {
     }
   },
   mounted() {
-    this.getAttendanceData()
+    this.getAttendanceData() //fetches the attendance data
     this.getZipData()
   },
   methods: {
@@ -65,7 +65,7 @@ export default {
       }
       this.loading = false
     },
-    async getZipData() {
+    async getZipData() { //fetches zip data
       try {
         this.zipError = null
         this.zipLoading = true
@@ -135,7 +135,7 @@ export default {
                 <th class="p-4 text-left">Number of Attendees</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-300">
+            <tbody class="divide-y divide-gray-300"> <!--used editevent here to go back to the eventdetails page when when user clicks a table -->
               <tr
                 @click="editEvent(event._id)"
                 v-for="event in recentEvents"

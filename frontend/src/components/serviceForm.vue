@@ -11,21 +11,21 @@ export default {
     },
     data() {
         return {
-            org: '',
-            service: {
-                servicename: '',
-                servicedesc: '',
-                status: '',
+            org: '',//sets the organization data
+            service: { //sets the service data
+                servicename: '', // sets the name of the service
+                servicedesc: '', // sets up the description of what the service does
+                status: '', // displays the status of the service
             }
         }
     },
     created() {
-        axios.get(`${apiURL}/org`).then((res) => {
-        this.org = res.data._id
+        axios.get(`${apiURL}/org`).then((res) => { //the api call to fetch the org data
+        this.org = res.data._id //sets this data = to the id
         })
     },
     mounted() {
-        window.scrollTo(0, 0)
+        window.scrollTo(0, 0) //autoscroll to the top
     },
     methods: {
         async registerService() {
@@ -41,7 +41,7 @@ export default {
                 this.$router.push({ name: 'findService' })
             })
             .catch((error) => {
-                console.log(error)
+                console.log(error) //the log for any errors that may arise
             })
         }
         }

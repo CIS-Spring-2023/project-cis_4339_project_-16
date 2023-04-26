@@ -1,6 +1,6 @@
 <!-- eslint-disable prettier/prettier -->
 <template>
-  <main>
+  <main> <!--these containers adjust the content to improve visual clarity and aesthetics-->
     <div class="container mx-auto py-5 h-full">
       <div class="flex justify-center items-center h-full">
         <div class="w-full md:w-8/12 lg:w-6/12 xl:w-5/12">
@@ -9,7 +9,7 @@
               <div class="mb-5 md:mb-0 md:pb-5">
                 <h2 class="font-semibold mb-2 text-2xl uppercase">Login</h2>
                 <p class="text-gray-400 mb-5">Please enter your credentials!</p>
-
+                <!--The login form for inputs and the submit-->
                 <form @submit.prevent="store.login(username, password)" novalidate="true">
                   <div class="form-outline mb-4">
                     <input type="email" id="typeEmailX" class="form-control form-control-lg bg-gray-700 text-white rounded-lg py-3 px-4 block w-full mb-3" v-model="username" />
@@ -38,7 +38,7 @@ import { useLoggedInUserStore } from "@/store/loggedInUser";
 
 export default {
   data: () => {
-    return {
+    return {  //loads initial values from user input
       username: "",
       password: "",
     };
