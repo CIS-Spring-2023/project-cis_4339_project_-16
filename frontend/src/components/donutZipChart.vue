@@ -2,7 +2,7 @@
 <script>
 import { Chart, registerables } from 'chart.js'
 Chart.register(...registerables)
-
+//define props (label and chartData)
 export default {
   props: {
     label: {
@@ -12,11 +12,11 @@ export default {
       type: Array
     }
   },
-  async mounted() {
-    const backgroundColor = Object.keys(this.chartData).map(() => this.getColor())
+  async mounted() { //uses the data to load the chart's values
+    const backgroundColor = Object.keys(this.chartData).map(() => this.getColor())//getcolor generates an rgb color for the chart
     const borderColor = backgroundColor.map((e) =>
       e.replace(/[\d\.]+\)$/g, '1)')
-    )
+    )//using async to render the chart asynchronously
     await new Chart(this.$refs.zipChart, {
       type: 'doughnut',
       data: {
@@ -42,7 +42,7 @@ export default {
     })
   },
   methods: {
-    getColor(index) {
+    getColor(index) { //getcolor to load colors into the chart
       let channel = () => Math.random() * 255
       return `rgba(${channel()}, ${channel()}, ${channel()}, 0.2)`
     }
